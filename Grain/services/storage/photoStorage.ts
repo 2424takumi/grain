@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { v4 as uuidv4 } from 'uuid';
+import * as Crypto from 'expo-crypto';
 
 const PHOTOS_DIR = `${FileSystem.documentDirectory}photos/`;
 const ORIGINAL_DIR = `${PHOTOS_DIR}original/`;
@@ -29,7 +29,7 @@ interface SavePhotoResult {
 }
 
 export const savePhoto = async (photoUri: string): Promise<SavePhotoResult> => {
-  const photoId = uuidv4() as string;
+  const photoId = Crypto.randomUUID();
 
   // オリジナル写真を保存
   const originalPath = `${ORIGINAL_DIR}${photoId}.jpg`;

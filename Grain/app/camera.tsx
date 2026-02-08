@@ -3,10 +3,10 @@ import { View, Text, Pressable, StyleSheet, Alert } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import * as Crypto from 'expo-crypto';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { savePhoto } from '@/services/storage/photoStorage';
 import { createEntry } from '@/services/database/queries';
-import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 
 export default function CameraScreen() {
@@ -64,7 +64,7 @@ export default function CameraScreen() {
         // エントリー作成
         const today = format(new Date(), 'yyyy-MM-dd');
         await createEntry({
-          id: uuidv4(),
+          id: Crypto.randomUUID(),
           entryDate: today,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),

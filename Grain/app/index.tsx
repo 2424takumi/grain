@@ -1,13 +1,15 @@
-import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchAllEntries } from '@/services/database/queries';
 import { getPhotoUri } from '@/services/storage/photoStorage';
+import { createTestEntries, clearAllEntries } from '@/services/database/testData';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 
 export default function TimelineScreen() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { data: entries, isLoading } = useQuery({
     queryKey: ['entries'],
@@ -16,6 +18,39 @@ export default function TimelineScreen() {
 
   const handleCameraPress = () => {
     router.push('/camera');
+  };
+
+  const handleCreateTestData = async () => {
+    try {
+      await createTestEntries(7);
+      queryClient.invalidateQueries({ queryKey: ['entries'] });
+      Alert.alert('成功', '7日分のテストデータを作成しました');
+    } catch (error) {
+      Alert.alert('エラー', 'テストデータの作成に失敗しました');
+    }
+  };
+
+  const handleClearData = async () => {
+    Alert.alert(
+      '確認',
+      'すべてのエントリーを削除しますか？',
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: '削除',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await clearAllEntries();
+              queryClient.invalidateQueries({ queryKey: ['entries'] });
+              Alert.alert('成功', 'すべてのエントリーを削除しました');
+            } catch (error) {
+              Alert.alert('エラー', '削除に失敗しました');
+            }
+          },
+        },
+      ]
+    );
   };
 
   if (isLoading) {
@@ -53,8 +88,20 @@ export default function TimelineScreen() {
       {/* ヘッダー */}
       <View style={styles.header}>
         <Text style={styles.title}>Grain</Text>
-        <Pressable onPress={handleCameraPress}>
-          <Text style={styles.plusButton}>+</Text>
+        <View style={styles.headerButtons}>
+          <Pressable onPress={handleCameraPress}>
+            <Text style={styles.plusButton}>+</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* デバッグボタン（開発用） */}
+      <View style={styles.debugButtons}>
+        <Pressable onPress={handleCreateTestData} style={styles.debugButton}>
+          <Text style={styles.debugButtonText}>テストデータ作成</Text>
+        </Pressable>
+        <Pressable onPress={handleClearData} style={styles.debugButtonDanger}>
+          <Text style={styles.debugButtonText}>全削除</Text>
         </Pressable>
       </View>
 
@@ -109,9 +156,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
   plusButton: {
     fontSize: 24,
     color: '#000000',
+  },
+  debugButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  debugButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#007AFF',
+    borderRadius: 6,
+  },
+  debugButtonDanger: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#FF3B30',
+    borderRadius: 6,
+  },
+  debugButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   emptyState: {
     flex: 1,

@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { initDatabase } from '@/services/database/db';
@@ -16,20 +16,7 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="index" />
-        <Stack.Screen
-          name="camera"
-          options={{
-            presentation: 'modal',
-          }}
-        />
-        <Stack.Screen name="entry/[id]" />
-      </Stack>
+      <Slot />
     </QueryClientProvider>
   );
 }

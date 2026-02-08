@@ -19,24 +19,16 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#FFFFFF' },
         }}
       >
         <Stack.Screen name="index" />
         <Stack.Screen
           name="camera"
           options={{
-            presentation: 'fullScreenModal',
-            animation: 'slide_from_bottom',
+            presentation: 'modal',
           }}
         />
-        <Stack.Screen
-          name="entry/[id]"
-          options={{
-            presentation: 'card',
-            animation: 'slide_from_right',
-          }}
-        />
+        <Stack.Screen name="entry/[id]" />
       </Stack>
     </QueryClientProvider>
   );

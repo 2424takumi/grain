@@ -96,37 +96,37 @@ export default function CameraScreen() {
         ref={cameraRef}
         style={styles.camera}
         facing={facing}
-      >
-        {/* 閉じるボタン */}
-        <View style={styles.topControls}>
-          <Pressable onPress={handleClose} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>✕</Text>
-          </Pressable>
-        </View>
+      />
 
-        {/* ヒントテキスト */}
-        <View style={styles.hintContainer}>
-          <Text style={styles.hintText}>前日と同じ構図で撮ろう</Text>
-        </View>
+      {/* 閉じるボタン */}
+      <View style={styles.topControls}>
+        <Pressable onPress={handleClose} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </Pressable>
+      </View>
 
-        {/* 下部コントロール */}
-        <View style={styles.bottomControls}>
-          <View style={{ width: 44 }} />
+      {/* ヒントテキスト */}
+      <View style={styles.hintContainer}>
+        <Text style={styles.hintText}>前日と同じ構図で撮ろう</Text>
+      </View>
 
-          {/* シャッターボタン */}
-          <Pressable
-            onPress={takePicture}
-            style={styles.shutterButton}
-          >
-            <View style={styles.shutterInner} />
-          </Pressable>
+      {/* 下部コントロール */}
+      <View style={styles.bottomControls}>
+        <View style={{ width: 44 }} />
 
-          {/* カメラ切り替え */}
-          <Pressable onPress={toggleCameraFacing} style={styles.flipButton}>
-            <Text style={styles.flipButtonText}>⟳</Text>
-          </Pressable>
-        </View>
-      </CameraView>
+        {/* シャッターボタン */}
+        <Pressable
+          onPress={takePicture}
+          style={styles.shutterButton}
+        >
+          <View style={styles.shutterInner} />
+        </Pressable>
+
+        {/* カメラ切り替え */}
+        <Pressable onPress={toggleCameraFacing} style={styles.flipButton}>
+          <Text style={styles.flipButtonText}>⟳</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }

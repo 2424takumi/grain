@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import * as Crypto from 'expo-crypto';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { savePhoto } from '@/services/storage/photoStorage';
-import { createEntry } from '@/services/database/queries';
+import { createEntry, fetchEntryByDate } from '@/services/database/queries';
 import { format } from 'date-fns';
 
 export default function CameraScreen() {
@@ -58,11 +58,23 @@ export default function CameraScreen() {
       });
 
       if (photo) {
+        // 今日のエントリーが既に存在するかチェック（念のため）
+        const today = format(new Date(), 'yyyy-MM-dd');
+        const existingEntry = await fetchEntryByDate(today);
+
+        if (existingEntry) {
+          Alert.alert(
+            'エラー',
+            '今日はすでに撮影済みです。1日1枚の制約があります。',
+            [{ text: 'OK', onPress: () => router.back() }]
+          );
+          return;
+        }
+
         // 写真を保存
         const { originalPath, thumbnailPath, fileSize, width, height } = await savePhoto(photo.uri);
 
         // エントリー作成
-        const today = format(new Date(), 'yyyy-MM-dd');
         await createEntry({
           id: Crypto.randomUUID(),
           entryDate: today,

@@ -1,7 +1,7 @@
 import { View, Text, FlatList, Pressable, StyleSheet, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchAllEntries } from '@/services/database/queries';
+import { fetchAllEntries, fetchEntryByDate } from '@/services/database/queries';
 import { getPhotoUri } from '@/services/storage/photoStorage';
 import { createTestEntries, clearAllEntries } from '@/services/database/testData';
 import { format } from 'date-fns';
@@ -16,8 +16,26 @@ export default function TimelineScreen() {
     queryFn: fetchAllEntries,
   });
 
-  const handleCameraPress = () => {
-    router.push('/camera');
+  const handleCameraPress = async () => {
+    // 今日のエントリーが既に存在するかチェック
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const existingEntry = await fetchEntryByDate(today);
+
+    if (existingEntry) {
+      Alert.alert(
+        '今日はすでに撮影済みです',
+        'エントリーを表示しますか？',
+        [
+          { text: 'キャンセル', style: 'cancel' },
+          {
+            text: 'エントリーを見る',
+            onPress: () => router.push(`/entry/${existingEntry.id}`),
+          },
+        ]
+      );
+    } else {
+      router.push('/camera');
+    }
   };
 
   const handleCreateTestData = async () => {

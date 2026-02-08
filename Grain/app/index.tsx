@@ -24,8 +24,9 @@ export default function TimelineScreen() {
     try {
       await createTestEntries(7);
       queryClient.invalidateQueries({ queryKey: ['entries'] });
-      Alert.alert('成功', '7日分のテストデータを作成しました');
+      Alert.alert('成功', 'テストデータを作成しました\n（既存の日付はスキップされました）');
     } catch (error) {
+      console.error('テストデータ作成エラー:', error);
       Alert.alert('エラー', 'テストデータの作成に失敗しました');
     }
   };

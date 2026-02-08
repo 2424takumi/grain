@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Crypto from 'expo-crypto';
-import { createEntry } from './queries';
+import { createEntry, fetchEntryByDate } from './queries';
 import { format, subDays } from 'date-fns';
 
 const PHOTOS_DIR = `${FileSystem.documentDirectory}photos/`;
@@ -51,9 +51,20 @@ export const createTestEntries = async (count: number = 7): Promise<void> => {
       '#BB8FCE', // 紫
     ];
 
+    let createdCount = 0;
+    let skippedCount = 0;
+
     for (let i = 0; i < count; i++) {
       const date = subDays(new Date(), i);
       const dateString = format(date, 'yyyy-MM-dd');
+
+      // 既存のエントリーをチェック
+      const existingEntry = await fetchEntryByDate(dateString);
+      if (existingEntry) {
+        console.log(`⏭️  ${dateString} のエントリーは既に存在するためスキップ`);
+        skippedCount++;
+        continue;
+      }
 
       // ダミー画像を作成
       const color = colors[i % colors.length];
@@ -83,9 +94,11 @@ export const createTestEntries = async (count: number = 7): Promise<void> => {
         photoHeight: 400,
         isDeleted: false,
       });
+
+      createdCount++;
     }
 
-    console.log(`✅ ${count}件のテストエントリーを作成しました`);
+    console.log(`✅ ${createdCount}件のテストエントリーを作成しました（${skippedCount}件スキップ）`);
   } catch (error) {
     console.error('テストデータ作成エラー:', error);
     throw error;
